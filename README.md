@@ -26,3 +26,7 @@ Video soon
 <a href="https://nowpayments.io/donation?api_key=HHZTHS8-YC9MEHG-HTC73AH-5WVP950" target="_blank" rel="noreferrer noopener">
     <img src="https://nowpayments.io/images/embeds/donation-button-white.svg" alt="Cryptocurrency & Bitcoin donation button by NOWPayments">
 </a>
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
