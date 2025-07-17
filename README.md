@@ -6,7 +6,7 @@ a secure , stable and fast direct tunnel based on Hysteria 2(UDP/TCP).
 ## How to Run?
 Run the following script on your server (Debian or Ubuntu):
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/main.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.sh)
 ```
 ## How to use ?
 Video soon
