@@ -1493,13 +1493,13 @@ if [ "$RUST_IS_READY" = true ]; then
 while true; do
   # Clear terminal and show logo
   clear
-  echo -e "${CYAN}"
-  figlet -f slant "Hysteria" # Changed to Hysteria
-  echo -e "${CYAN}"
+  echo -e "${GREEN}"
+  figlet -f slant "HPulse" # Changed to Hysteria
+  echo -e "${GREEN}"
   echo -e "\033[1;33m=========================================================="
-  echo -e "Developed by ErfanXRay => https://github.com/Erfan-XRay/TrustTunnel"
+  echo -e "Developed by ErfanXRay => https://github.com/Erfan-XRay/HPulse"
   echo -e "Telegram Channel => @Erfan_XRay"
-  echo -e "\033[0m${WHITE}Tunnel management script${WHITE}${RESET}" # Generic description
+  echo -e "\033[0m${WHITE}Tunnel script based on Hysteria 2${WHITE}${RESET}" # Generic description
   draw_green_line
   echo -e "${GREEN}|${RESET}      ${WHITE}Main Menu${RESET}      ${GREEN}|${RESET}" # Changed to Main Menu
   draw_green_line
