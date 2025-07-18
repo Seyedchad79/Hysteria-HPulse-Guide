@@ -12,6 +12,12 @@ bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.
 Video soon
 ## ⚙️ Features
 - Add, remove, and manage client/server services
+- Support Ipv4/Ipv6
+- Support TCP/UDP/Both
+- Support Strict and SNI tunnel mode
+- Obfs and Masquerade support
+- Automated QUIC parameters
+- Add and remove certificates ( Using Certbot )
 - View logs of specific clients
 - Interactive CLI with colorful UI
 - Easy integration with Xray/V2Ray/Wireguard/etc.
