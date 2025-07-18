@@ -1364,8 +1364,7 @@ speedtest_from_server_action() {
     print_success "Speedtest completed."
   else
     print_error "❌ Configuration file not found: $full_config_path"
-  fi
-
+  </div>
   echo ""
   echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
   read -p ""
@@ -1387,69 +1386,15 @@ perform_initial_setup() {
   # Install required tools
   echo -e "${CYAN}Updating package lists and installing dependencies...${RESET}"
   sudo apt update
-  sudo apt install -y build-essential curl pkg-config libssl-dev git figlet certbot rustc cargo cron
+  # Removed rustc and cargo from apt install list
+  sudo apt install -y build-essential curl pkg-config libssl-dev git figlet certbot cron
 
-  # Default path for the Cargo environment file.
-  CARGO_ENV_FILE="$HOME/.cargo/env"
+  # Removed Rust-specific checks and installations
+  # The script now assumes Hysteria's own installation handles its dependencies.
 
-  echo "Checking for Rust installation..."
-
-  # Check if 'rustc' command is available in the system's PATH.
-  if command -v rustc >/dev/null 2>&1; then
-    # If 'rustc' is found, Rust is already installed.
-    echo "✅ Rust is already installed: $(rustc --version)"
-    RUST_IS_READY=true
-  else
-    # If 'rustc' is not found, start the installation.
-    echo "🦀 Rust is not installed. Installing..."
-    RUST_IS_READY=false
-
-    # Download and run the rustup installer.
-    if curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y; then
-      echo "✅ Rust installed successfully."
-
-      # Source the Cargo environment file for the current script session.
-      if [ -f "$CARGO_ENV_FILE" ]; then
-        source "$CARGO_ENV_FILE"
-        echo "♻️ Cargo environment file sourced for this script session."
-      else
-        # Fallback if the environment file is not found.
-        echo "⚠️ Cargo environment file ($CARGO_ENV_FILE) not found. You might need to set PATH manually."
-        export PATH="$HOME/.cargo/bin:$PATH"
-      fi
-
-      # Display the installed version for confirmation.
-      if command -v rustc >/dev/null 2>&1; then
-        echo "✅ Installed Rust version: $(rustc --version)"
-        RUST_IS_READY=true
-      else
-        echo "❌ Rust is installed but 'rustc' is not available in the current PATH."
-      fi
-
-      echo ""
-      echo "------------------------------------------------------------------"
-      echo "⚠️ Important: To make Rust available in your terminal,"
-      echo "    you need to restart your terminal or run this command:"
-      echo "    source \"$CARGO_ENV_FILE\""
-      echo "    Run this command once in each new terminal session."
-      echo "------------------------------------------------------------------"
-
-    else
-      # Error message if installation fails.
-      echo "❌ An error occurred during Rust installation. Please check your internet connection or try again."
-      return 1 # Indicate failure
-    fi
-  fi
-
-  if [ "$RUST_IS_READY" = true ]; then
-    sudo mkdir -p "$(dirname "$SETUP_MARKER_FILE")" # Ensure directory exists for marker file
-    sudo touch "$SETUP_MARKER_FILE" # Create marker file only if all initial setup steps (excluding symlink) succeed
-    print_success "Initial setup complete."
-    return 0
-  else
-    print_error "Rust is not ready. Skipping setup marker."
-    return 1 # Indicate failure
-  fi
+  sudo mkdir -p "$(dirname "$SETUP_MARKER_FILE")" # Ensure directory exists for marker file
+  sudo touch "$SETUP_MARKER_FILE" # Create marker file only if all initial setup steps succeed
+  print_success "Initial setup complete."
   echo ""
   return 0
 }
@@ -1524,6 +1469,7 @@ delete_certificates_action() {
 
   if [ ${#cert_domains[@]} -eq 0 ]; then
     print_error "No SSL certificates found to delete."
+    echo ""
     echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
     read -p ""
     return 0
@@ -1618,14 +1564,9 @@ set -e # Exit immediately if a command exits with a non-zero status
 # Perform initial setup (will run only once)
 perform_initial_setup || { echo "Initial setup failed. Exiting."; exit 1; }
 
-# Check Rust readiness after initial setup
-if command -v rustc >/dev/null 2>&1; then
-  RUST_IS_READY=true
-else
-  RUST_IS_READY=false
-fi
+# Removed Rust readiness check as it's no longer installed by this script's initial setup.
+# The Hysteria installation script is responsible for its own dependencies.
 
-if [ "$RUST_IS_READY" = true ]; then
 while true; do
   # Clear terminal and show logo
   clear
@@ -2037,7 +1978,4 @@ while true; do
   esac
   echo ""
 done
-else
-echo ""
-  echo "🛑 Rust is not ready. Skipping the main menu."
-fi
+# Removed the else block for Rust readiness as it's no longer a prerequisite for this script.
