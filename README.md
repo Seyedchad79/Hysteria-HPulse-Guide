@@ -2,7 +2,7 @@
 ![Menu](https://github.com/Erfan-XRay/HPulse/blob/main/menu.png)
 
 ## What is HPulse?
-a secure , stable and fast direct tunnel based on Hysteria 2(UDP/TCP).
+a secure , stable and fast direct tunnel based on [Hysteria 2](https://v2.hysteria.network/)(UDP/TCP).
 ## How to Run?
 Run the following script on your server (Debian or Ubuntu):
 ```
