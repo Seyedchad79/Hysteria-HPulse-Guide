@@ -1,5 +1,5 @@
 
-![Menu](https://github.com/Erfan-XRay/HPulse/blob/main/Screenshot%202025-07-17%20185805.png)
+![Menu](https://github.com/Erfan-XRay/HPulse/blob/main/hpulse.png)
 
 ## What is HPulse?
 a secure , stable and fast direct tunnel based on Hysteria 2(UDP/TCP).
