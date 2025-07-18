@@ -1634,10 +1634,10 @@ while true; do
   echo -e "${CYAN}"
   draw_line "$CYAN" "=" 80 # Decorative line
   echo ""
-  echo -e "Developed by ErfanXRay => https://github.com/Erfan-XRay/HPulse"
-  echo -e "Telegram Channel => @Erfan_XRay"
-  echo -e "\033[0m${WHITE}Tunnel script based on Hysteria 2${WHITE}${RESET}" # Generic description
-
+  echo -e "Developed by ErfanXRay => ${RED}https://github.com/Erfan-XRay/HPulse${RESET}"
+  echo -e "Telegram Channel => ${RED}@Erfan_XRay${RESET}"
+  echo -e "Tunnel script based on ${CYAN}Hysteria 2${RESET}" # Generic description
+  echo ""
   # Get server IP addresses
   SERVER_IPV4=$(hostname -I | awk '{print $1}')
   SERVER_IPV6=$(hostname -I | awk '{print $2}') # This might be empty if no IPv6
