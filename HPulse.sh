@@ -1364,7 +1364,7 @@ speedtest_from_server_action() {
     print_success "Speedtest completed."
   else
     print_error "❌ Configuration file not found: $full_config_path"
-  </div>
+  fi
   echo ""
   echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
   read -p ""
