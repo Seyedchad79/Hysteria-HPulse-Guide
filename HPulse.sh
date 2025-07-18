@@ -1658,11 +1658,13 @@ while true; do
 
   # Menu
   echo "Select an option:"
+  echo ""
   echo -e "${MAGENTA}1) Install Hysteria${RESET}"
   echo -e "${CYAN}2) Hysteria tunnel management${RESET}"
   echo -e "${YELLOW}3) Certificate management${RESET}" # Re-numbered from 5
   echo -e "${RED}4) Uninstall Hysteria and cleanup${RESET}" # Re-numbered from 6, updated text
   echo -e "${WHITE}5) Exit${RESET}" # Re-numbered from 7
+  echo ""
   read -p "👉 Your choice: " choice
 
   case $choice in
