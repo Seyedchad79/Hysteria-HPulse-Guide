@@ -9,7 +9,7 @@ Run the following script on your server (Debian or Ubuntu):
 bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.sh)
 ```
 ## How to use ?
-Video soon
+[![Watch on YouTube](https://img.youtube.com/vi/mrXUkbtGxN0/0.jpg)](https://youtu.be/mrXUkbtGxN0?si=IMmdX5zMs4cfSe5R)
 ## ⚙️ Features
 - Add, remove, and manage client/server services
 - Support Ipv4/Ipv6
