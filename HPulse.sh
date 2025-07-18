@@ -1633,6 +1633,7 @@ while true; do
   figlet -f slant "HPulse Tunnel" # Changed to Hysteria
   echo -e "${CYAN}"
   echo -e "${CYAN}=========================================================="
+  echo ""
   echo -e "Developed by ErfanXRay => https://github.com/Erfan-XRay/HPulse"
   echo -e "Telegram Channel => @Erfan_XRay"
   echo -e "\033[0m${WHITE}Tunnel script based on Hysteria 2${WHITE}${RESET}" # Generic description
