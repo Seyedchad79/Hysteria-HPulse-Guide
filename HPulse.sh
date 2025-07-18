@@ -1336,7 +1336,7 @@ speedtest_from_server_action() {
     echo ""
     echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
     read -p ""
-    return 1
+    return 0
   fi
 
   echo -e "${CYAN}📋 Please select a client configuration file for speedtest:${RESET}"
@@ -1526,7 +1526,7 @@ delete_certificates_action() {
     print_error "No SSL certificates found to delete."
     echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
     read -p ""
-    return 1
+    return 0
   fi
 
   echo -e "${CYAN}📋 Please select a certificate to delete:${RESET}"
@@ -1549,7 +1549,7 @@ delete_certificates_action() {
     print_error "No certificate selected. Aborting deletion."
     echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
     read -p ""
-    return 1
+    return 0
   fi
 
   echo -e "${RED}⚠️ Are you sure you want to delete the certificate for '$selected_domain'? (y/N): ${RESET}"
@@ -1577,15 +1577,15 @@ certificate_management_menu() {
   while true; do
     clear
     echo ""
-    draw_line "$GREEN" "=" 40
+    draw_line "$YELLOW" "=" 40
     echo -e "${CYAN}     🔐 Certificate Management${RESET}"
-    draw_line "$GREEN" "=" 40
+    draw_line "$YELLOW" "=" 40
     echo ""
     echo -e "  ${YELLOW}1)${RESET} ${WHITE}Get new certificate${RESET}"
     echo -e "  ${YELLOW}2)${RESET} ${WHITE}Delete certificates${RESET}"
     echo -e "  ${YELLOW}3)${RESET} ${WHITE}Back to main menu${RESET}"
     echo ""
-    draw_line "$GREEN" "-" 40
+    draw_line "$YELLOW" "-" 40
     echo -e "👉 ${CYAN}Your choice:${RESET} "
     read -p "" cert_choice
     echo ""
@@ -1675,15 +1675,15 @@ while true; do
       while true; do
         clear
         echo ""
-        draw_line "$GREEN" "=" 40
+        draw_line "$CYAN" "=" 40
         echo -e "${CYAN}     🌐 Hysteria Tunnel Management${RESET}"
-        draw_line "$GREEN" "=" 40
+        draw_line "$CYAN" "=" 40
         echo ""
         echo -e "  ${YELLOW}1)${RESET} ${MAGENTA}Server (Kharej)${RESET}"
         echo -e "  ${YELLOW}2)${RESET} ${BLUE}Client (Iran)${RESET}"
         echo -e "  ${YELLOW}3)${RESET} ${WHITE}Return to main menu${RESET}"
         echo ""
-        draw_line "$GREEN" "-" 40
+        draw_line "$CYAN" "-" 40
         echo -e "👉 ${CYAN}Your choice:${RESET} "
         read -p "" hysteria_tunnel_choice
         echo ""
@@ -1693,9 +1693,9 @@ while true; do
             while true; do
               clear
               echo ""
-              draw_line "$GREEN" "=" 40
+              draw_line "$CYAN" "=" 40
               echo -e "${CYAN}     🔧 Hysteria Server Management${RESET}"
-              draw_line "$GREEN" "=" 40
+              draw_line "$CYAN" "=" 40
               echo ""
               echo -e "  ${YELLOW}1)${RESET} ${WHITE}Add new Hysteria server${RESET}"
               echo -e "  ${YELLOW}2)${RESET} ${WHITE}Show Hysteria server logs${RESET}"
@@ -1704,7 +1704,7 @@ while true; do
               echo -e "  ${YELLOW}5)${RESET} ${RED}Delete scheduled restart${RESET}"
               echo -e "  ${YELLOW}6)${RESET} ${WHITE}Back to previous menu${RESET}"
               echo ""
-              draw_line "$GREEN" "-" 40
+              draw_line "$CYAN" "-" 40
               echo -e "👉 ${CYAN}Your choice:${RESET} "
               read -p "" hysteria_srv_choice
               echo ""
@@ -1853,9 +1853,9 @@ while true; do
             while true; do
               clear
               echo ""
-              draw_line "$GREEN" "=" 40
+              draw_line "$CYAN" "=" 40
               echo -e "${CYAN}     📡 Hysteria Client Management${RESET}"
-              draw_line "$GREEN" "=" 40
+              draw_line "$CYAN" "=" 40
               echo ""
               echo -e "  ${YELLOW}1)${RESET} ${WHITE}Add new Hysteria client${RESET}"
               echo -e "  ${YELLOW}2)${RESET} ${WHITE}Show Hysteria client logs${RESET}"
@@ -1865,7 +1865,7 @@ while true; do
               echo -e "  ${YELLOW}6)${RESET} ${WHITE}Speedtest from server${RESET}" # New option
               echo -e "  ${YELLOW}7)${RESET} ${WHITE}Back to previous menu${RESET}" # Adjusted number
               echo ""
-              draw_line "$GREEN" "-" 40
+              draw_line "$CYAN" "-" 40
               echo -e "👉 ${CYAN}Your choice:${RESET} "
               read -p "" hysteria_client_choice
               echo ""
