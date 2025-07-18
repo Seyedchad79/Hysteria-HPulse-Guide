@@ -1632,7 +1632,7 @@ while true; do
   echo -e "${CYAN}"
   figlet -f slant "HPulse Tunnel" # Changed to Hysteria
   echo -e "${CYAN}"
-  echo -e "${CYAN}=========================================================="
+  draw_line "$CYAN" "=" 80 # Decorative line
   echo ""
   echo -e "Developed by ErfanXRay => https://github.com/Erfan-XRay/HPulse"
   echo -e "Telegram Channel => @Erfan_XRay"
@@ -1642,7 +1642,7 @@ while true; do
   SERVER_IPV4=$(hostname -I | awk '{print $1}')
   SERVER_IPV6=$(hostname -I | awk '{print $2}') # This might be empty if no IPv6
 
-  echo "" # Added for spacing
+
   draw_line "$CYAN" "=" 40 # Decorative line
   echo -e "${CYAN}     🌐 Server Information${RESET}" # Changed to English
   draw_line "$CYAN" "=" 40 # Decorative line
