@@ -17,6 +17,9 @@ TRUST_SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(dirname "$TRUST_SCRIPT_PATH")"
 SETUP_MARKER_FILE="/var/lib/frpulse/.setup_complete" # Changed TrustTunnel to FRPulse
 
+# --- Script Version ---
+SCRIPT_VERSION="1.2.0" # Define the script version
+
 # --- Helper Functions ---
 
 # Function to draw a colored line for menu separation
@@ -675,6 +678,36 @@ add_new_hysteria_server_action() {
   fi
   echo ""
 
+  # Masquerade for server
+  local masquerade_config=""
+  echo -e "👉 ${WHITE}Do you want to enable Masquerade? (Y/n, default: n)${RESET}"
+  echo -e "   ${YELLOW}Note: If enabled, your tunnel port should be TLS (e.g., 443).${RESET}"
+  read -p "" enable_masquerade_choice
+  enable_masquerade_choice=${enable_masquerade_choice:-n}
+
+  if [[ "$enable_masquerade_choice" =~ ^[Yy]$ ]]; then
+    local masquerade_url
+    while true; do
+      echo -e "👉 ${WHITE}Enter Masquerade proxy URL (must start with https://, e.g., https://some.site.net):${RESET} "
+      read -p "" masquerade_url
+      if [[ "$masquerade_url" =~ ^https:// ]]; then
+        break
+      else
+        print_error "Invalid URL. It must start with https://."
+      fi
+    done
+    masquerade_config="
+masquerade:
+  proxy:
+    url: \"$masquerade_url\"
+    rewriteHost: true
+    insecure: true"
+    print_success "Masquerade enabled for server."
+  else
+    echo -e "${YELLOW}Masquerade is disabled for server.${RESET}"
+  fi
+  echo ""
+
   local upload_bandwidth=""
   local download_bandwidth=""
   local bandwidth_config="" # Initialize bandwidth_config
@@ -695,6 +728,20 @@ add_new_hysteria_server_action() {
   down: \"${download_bandwidth}Mbps\"" # Hysteria expects Mbps
     fi
   fi
+
+  # Speedtest for server
+  local speedtest_config=""
+  echo -e "👉 ${WHITE}Do you want to enable Speedtest? (Y/n, default: n):${RESET} "
+  read -p "" enable_speedtest_choice
+  enable_speedtest_choice=${enable_speedtest_choice:-n}
+
+  if [[ "$enable_speedtest_choice" =~ ^[Yy]$ ]]; then
+    speedtest_config="speedTest: true"
+    print_success "Speedtest enabled for server."
+  else
+    echo -e "${YELLOW}Speedtest is disabled for server.${RESET}"
+  fi
+  echo ""
 
 
   # --- QUIC Parameters Selection ---
@@ -820,7 +867,9 @@ tls:
   key: "$tls_key_file"
 ${sni_guard_config} # Conditionally add sniGuard
 ${obfuscation_config} # Optional obfuscation
+${masquerade_config} # Optional masquerade
 ${bandwidth_config} # Optional bandwidth limits
+${speedtest_config} # Optional speedtest
 ${quic_config}
 EOF
   print_success "hysteria-server-${server_name}.yaml created successfully at $config_file_path"
@@ -977,6 +1026,36 @@ obfs:
     print_success "Salamander obfuscation enabled."
   else
     echo -e "${YELLOW}Salamander obfuscation is disabled for client.${RESET}"
+  fi
+  echo ""
+
+  # Masquerade for client
+  local masquerade_config=""
+  echo -e "👉 ${WHITE}Do you want to enable Masquerade? (Y/n, default: n)${RESET}"
+  echo -e "   ${YELLOW}Note: If enabled, your tunnel port should be TLS (e.g., 443).${RESET}"
+  read -p "" enable_masquerade_choice
+  enable_masquerade_choice=${enable_masquerade_choice:-n}
+
+  if [[ "$enable_masquerade_choice" =~ ^[Yy]$ ]]; then
+    local masquerade_url
+    while true; do
+      echo -e "👉 ${WHITE}Enter Masquerade proxy URL (must start with https://, e.g., https://some.site.net):${RESET} "
+      read -p "" masquerade_url
+      if [[ "$masquerade_url" =~ ^https:// ]]; then
+        break
+      else
+        print_error "Invalid URL. It must start with https://."
+      fi
+    done
+    masquerade_config="
+masquerade:
+  proxy:
+    url: \"$masquerade_url\"
+    rewriteHost: true
+    insecure: true"
+    print_success "Masquerade enabled for client."
+  else
+    echo -e "${YELLOW}Masquerade is disabled for client.${RESET}"
   fi
   echo ""
 
@@ -1189,6 +1268,7 @@ server: "[$server_address]:$server_port" # Updated to include brackets around se
 auth: "$password" # Updated password format
 $tls_config
 $obfs_config
+${masquerade_config} # Optional masquerade
 ${udp_forwarding_config}
 ${tcp_forwarding_config}
 ${quic_config} # Added QUIC parameters to client config
@@ -1235,6 +1315,62 @@ EOF
   echo -e "${YELLOW}Press Enter to return to main menu...${RESET}"
   read -p ""
 }
+
+# New function for running speedtest from client
+speedtest_from_server_action() {
+  clear
+  echo ""
+  draw_line "$CYAN" "=" 40
+  echo -e "${CYAN}     ⚡ Speedtest from Server${RESET}"
+  draw_line "$CYAN" "=" 40
+  echo ""
+
+  echo -e "${YELLOW}⚠️ Note: Speedtest must be enabled on your Hysteria server for this to work.${RESET}"
+  echo ""
+
+  local config_dir="$(pwd)/hysteria"
+  mapfile -t client_configs < <(find "$config_dir" -maxdepth 1 -type f -name "hysteria-client-*.yaml" -printf "%f\n" | sort)
+
+  if [ ${#client_configs[@]} -eq 0 ]; then
+    print_error "❌ No Hysteria client configuration files found in $config_dir."
+    echo ""
+    echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
+    read -p ""
+    return 1
+  fi
+
+  echo -e "${CYAN}📋 Please select a client configuration file for speedtest:${RESET}"
+  client_configs+=("Back to previous menu")
+  select selected_config_file in "${client_configs[@]}"; do
+    if [[ "$selected_config_file" == "Back to previous menu" ]]; then
+      echo -e "${YELLOW}Returning to previous menu...${RESET}"
+      echo ""
+      return 0
+    elif [ -n "$selected_config_file" ]; then
+      break
+    else
+      print_error "Invalid selection. Please enter a valid number."
+    fi
+  done
+  echo ""
+
+  local full_config_path="$config_dir/$selected_config_file"
+
+  if [ -f "$full_config_path" ]; then
+    echo -e "${CYAN}🚀 Running speedtest using client: ${WHITE}$selected_config_file${RESET}"
+    echo ""
+    /usr/local/bin/hysteria speedtest -c "$full_config_path"
+    echo ""
+    print_success "Speedtest completed."
+  else
+    print_error "❌ Configuration file not found: $full_config_path"
+  fi
+
+  echo ""
+  echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
+  read -p ""
+}
+
 
 # --- Initial Setup Function ---
 # This function performs one-time setup tasks like installing dependencies
@@ -1493,16 +1629,32 @@ if [ "$RUST_IS_READY" = true ]; then
 while true; do
   # Clear terminal and show logo
   clear
-  echo -e "${GREEN}"
-  figlet -f slant "HPulse" # Changed to Hysteria
-  echo -e "${GREEN}"
-  echo -e "\033[1;33m=========================================================="
+  echo -e "${CYAN}"
+  figlet -f slant "HPulse Tunnel" # Changed to Hysteria
+  echo -e "${CYAN}"
+  echo -e "${CYAN}=========================================================="
   echo -e "Developed by ErfanXRay => https://github.com/Erfan-XRay/HPulse"
   echo -e "Telegram Channel => @Erfan_XRay"
   echo -e "\033[0m${WHITE}Tunnel script based on Hysteria 2${WHITE}${RESET}" # Generic description
-  draw_green_line
-  echo -e "${GREEN}|${RESET}      ${WHITE}Main Menu${RESET}      ${GREEN}|${RESET}" # Changed to Main Menu
-  draw_green_line
+
+  # Get server IP addresses
+  SERVER_IPV4=$(hostname -I | awk '{print $1}')
+  SERVER_IPV6=$(hostname -I | awk '{print $2}') # This might be empty if no IPv6
+
+  echo "" # Added for spacing
+  draw_line "$CYAN" "=" 40 # Decorative line
+  echo -e "${CYAN}     🌐 Server Information${RESET}" # Changed to English
+  draw_line "$CYAN" "=" 40 # Decorative line
+  echo -e "  ${WHITE}IPv4 Address: ${YELLOW}$SERVER_IPV4${RESET}" # Changed to English
+  if [[ -n "$SERVER_IPV6" ]]; then
+    echo -e "  ${WHITE}IPv6 Address: ${YELLOW}$SERVER_IPV6${RESET}" # Changed to English
+  else
+    echo -e "  ${WHITE}IPv6 Address: ${YELLOW}Not Available${RESET}" # Changed to English
+  fi
+  echo -e "  ${WHITE}Script Version: ${YELLOW}$SCRIPT_VERSION${RESET}" # Changed to English
+  draw_line "$CYAN" "=" 40 # Decorative line
+  echo "" # Added for spacing
+
   # Menu
   echo "Select an option:"
   echo -e "${MAGENTA}1) Install Hysteria${RESET}"
@@ -1707,7 +1859,8 @@ while true; do
               echo -e "  ${YELLOW}3)${RESET} ${WHITE}Delete a Hysteria client${RESET}"
               echo -e "  ${YELLOW}4)${RESET} ${BLUE}Schedule Hysteria client restart${RESET}"
               echo -e "  ${YELLOW}5)${RESET} ${RED}Delete scheduled restart${RESET}"
-              echo -e "  ${YELLOW}6)${RESET} ${WHITE}Back to previous menu${RESET}"
+              echo -e "  ${YELLOW}6)${RESET} ${WHITE}Speedtest from server${RESET}" # New option
+              echo -e "  ${YELLOW}7)${RESET} ${WHITE}Back to previous menu${RESET}" # Adjusted number
               echo ""
               draw_line "$GREEN" "-" 40
               echo -e "👉 ${CYAN}Your choice:${RESET} "
@@ -1834,7 +1987,10 @@ while true; do
                 5)
                   delete_cron_job_action
                   ;;
-                6)
+                6) # New Speedtest option
+                  speedtest_from_server_action
+                  ;;
+                7) # Adjusted number for Back to previous menu
                   echo -e "${YELLOW}Returning to previous menu...${RESET}"
                   break # Break out of this while loop to return to Hysteria Tunnel Management
                   ;;
