@@ -1575,8 +1575,8 @@ while true; do
   echo -e "${CYAN}"
   draw_line "$CYAN" "=" 80 # Decorative line
   echo ""
-  echo -e "Developed by ErfanXRay => ${RED}https://github.com/Erfan-XRay/HPulse${RESET}"
-  echo -e "Telegram Channel => ${RED}@Erfan_XRay${RESET}"
+  echo -e "Developed by ErfanXRay => ${GREEN}https://github.com/Erfan-XRay/HPulse${RESET}"
+  echo -e "Telegram Channel => ${GREEN}@Erfan_XRay${RESET}"
   echo -e "Tunnel script based on ${CYAN}Hysteria 2${RESET}" # Generic description
   echo ""
   # Get server IP addresses
