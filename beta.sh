@@ -113,15 +113,25 @@ validate_host() {
 # Function to validate IP:Port format
 validate_ip_port() {
   local input="$1"
-  local ip_part=$(echo "$input" | cut -d':' -f1)
-  local port_part=$(echo "$input" | cut -d':' -f2)
+  local host_part=""
+  local port_part=""
 
-  if [[ "$input" =~ ^[0-9a-fA-F.:\[\]]+:[0-9]+$ ]]; then
-    if validate_host "$ip_part" && validate_port "$port_part"; then
-      return 0 # Valid
-    fi
+  # Check for IPv6 with brackets
+  if [[ "$input" =~ ^\[(.*)\]:([0-9]+)$ ]]; then
+    host_part="${BASH_REMATCH[1]}"
+    port_part="${BASH_REMATCH[2]}"
+  elif [[ "$input" =~ ^([^:]+):([0-9]+)$ ]]; then
+    host_part="${BASH_REMATCH[1]}"
+    port_part="${BASH_REMATCH[2]}"
+  else
+    return 1 # Does not match IP:Port pattern
   fi
-  return 1 # Invalid
+
+  if validate_host "$host_part" && validate_port "$port_part"; then
+    return 0 # Valid
+  else
+    return 1 # Invalid host or port
+  fi
 }
 
 
@@ -1405,23 +1415,31 @@ hysteria_ping_test_action() {
   fi
 
   local target_ip_port
+  echo -e "${YELLOW}Note: The port refers to the tunnel port you intend to use.${RESET}" # Added note
   while true; do
-    echo -e "👉 ${WHITE}Enter IP address and port to ping (e.g., 1.1.1.1:443, [2606:4700::1111]:443):${RESET} "
+    echo -e "👉 ${WHITE}Enter IP address or domain and port to ping (e.g., 1.1.1.1:443, example.com:8443, [2606:4700::1111]:443, or 'q' to quit):${RESET} " # Updated prompt
     read -p "" target_ip_port
-    if validate_ip_port "$target_ip_port"; then
+
+    if [[ "$target_ip_port" =~ ^[Qq]$ ]]; then # Check for 'q' to quit
+      echo -e "${YELLOW}Returning to main menu...${RESET}"
+      echo ""
+      return 0
+    elif validate_ip_port "$target_ip_port"; then
       break
     else
-      print_error "Invalid IP:Port format. Please try again."
+      print_error "Invalid IP:Port or domain:Port format. Please try again or enter 'q' to quit."
     fi
   done
   echo ""
 
   echo -e "${CYAN}🚀 Running Hysteria ping test to ${WHITE}$target_ip_port${RESET} ...${RESET}"
   echo ""
-  # Execute hysteria ping with the provided IP:Port
-  /usr/local/bin/hysteria ping "$target_ip_port"
-  echo ""
-  print_success "Hysteria ping test completed."
+  # Execute hysteria ping with the provided IP:Port and check its exit status
+  if /usr/local/bin/hysteria ping "$target_ip_port"; then
+    print_success "Hysteria ping test completed successfully."
+  else
+    print_error "Hysteria ping test failed. Please check the target IP/domain and port, or your network connectivity."
+  fi
   echo ""
   echo -e "${YELLOW}Press Enter to return to main menu...${RESET}"
   read -p ""
@@ -1721,7 +1739,7 @@ while true; do
                   clear
                   echo ""
                   draw_line "$CYAN" "=" 40
-                  echo -e "${CYAN}     📊 Hysteria Server Logs${RESET}"
+                  echo -e "${CYAN}     � Hysteria Server Logs${RESET}"
                   draw_line "$CYAN" "=" 40
                   echo ""
                   echo -e "${CYAN}🔍 Searching for Hysteria servers ...${RESET}"
@@ -2045,3 +2063,4 @@ while true; do
   echo ""
 done
 # Removed the else block for Rust readiness as it's no longer a prerequisite for this script.
+�
