@@ -110,6 +110,21 @@ validate_host() {
   fi
 }
 
+# Function to validate IP:Port format
+validate_ip_port() {
+  local input="$1"
+  local ip_part=$(echo "$input" | cut -d':' -f1)
+  local port_part=$(echo "$input" | cut -d':' -f2)
+
+  if [[ "$input" =~ ^[0-9a-fA-F.:\[\]]+:[0-9]+$ ]]; then
+    if validate_host "$ip_part" && validate_port "$port_part"; then
+      return 0 # Valid
+    fi
+  fi
+  return 1 # Invalid
+}
+
+
 # Update cron job logic to include Hysteria
 reset_timer() {
   local service_to_restart="$1" # Optional: service name passed as argument
@@ -1375,7 +1390,7 @@ hysteria_ping_test_action() {
   clear
   echo ""
   draw_line "$CYAN" "=" 40
-  echo -e "${CYAN}     � Hysteria Ping Test (سرور ایران)${RESET}" # Updated title
+  echo -e "${CYAN}     📡 Hysteria Ping Test (Iran Server)${RESET}" # Updated title to English
   draw_line "$CYAN" "=" 40
   echo ""
 
@@ -1389,26 +1404,26 @@ hysteria_ping_test_action() {
     return
   fi
 
-  local target_host
+  local target_ip_port
   while true; do
-    echo -e "👉 ${WHITE}یک آدرس IP یا دامنه برای تست پینگ وارد کنید (مثال: google.com, 8.8.8.8):${RESET} "
-    read -p "" target_host
-    if validate_host "$target_host"; then
+    echo -e "👉 ${WHITE}Enter IP address and port to ping (e.g., 1.1.1.1:443, [2606:4700::1111]:443):${RESET} "
+    read -p "" target_ip_port
+    if validate_ip_port "$target_ip_port"; then
       break
     else
-      print_error "فرمت آدرس IP یا دامنه نامعتبر است. لطفا دوباره امتحان کنید."
+      print_error "Invalid IP:Port format. Please try again."
     fi
   done
   echo ""
 
-  echo -e "${CYAN}🚀 در حال اجرای تست پینگ Hysteria به ${WHITE}$target_host${RESET} ...${RESET}"
+  echo -e "${CYAN}🚀 Running Hysteria ping test to ${WHITE}$target_ip_port${RESET} ...${RESET}"
   echo ""
-  # Execute hysteria ping without -c flag
-  /usr/local/bin/hysteria ping "$target_host"
+  # Execute hysteria ping with the provided IP:Port
+  /usr/local/bin/hysteria ping "$target_ip_port"
   echo ""
-  print_success "تست پینگ Hysteria کامل شد."
+  print_success "Hysteria ping test completed."
   echo ""
-  echo -e "${YELLOW}برای بازگشت به منوی اصلی Enter را فشار دهید...${RESET}"
+  echo -e "${YELLOW}Press Enter to return to main menu...${RESET}"
   read -p ""
 }
 
@@ -1649,7 +1664,7 @@ while true; do
   echo ""
   echo -e "${MAGENTA}1) Install Hysteria${RESET}"
   echo -e "${CYAN}2) Hysteria tunnel management${RESET}"
-  echo -e "${BLUE}3) Hysteria ping test (use on server Iran)${RESET}" # NEW OPTION IN MAIN MENU
+  echo -e "${BLUE}3) Hysteria ping test (use on Iran server)${RESET}" # NEW OPTION IN MAIN MENU, text updated
   echo -e "${YELLOW}4) Certificate management${RESET}" # Re-numbered
   echo -e "${RED}5) Uninstall Hysteria and cleanup${RESET}" # Re-numbered
   echo -e "${WHITE}6) Exit${RESET}" # Re-numbered
@@ -2030,4 +2045,3 @@ while true; do
   echo ""
 done
 # Removed the else block for Rust readiness as it's no longer a prerequisite for this script.
-�
