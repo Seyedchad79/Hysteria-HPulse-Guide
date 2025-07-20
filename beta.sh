@@ -1370,6 +1370,83 @@ speedtest_from_server_action() {
   read -p ""
 }
 
+# New function for Hysteria ping test
+hysteria_ping_test_action() {
+  clear
+  echo ""
+  draw_line "$CYAN" "=" 40
+  echo -e "${CYAN}     📡 Hysteria Ping Test${RESET}"
+  draw_line "$CYAN" "=" 40
+  echo ""
+
+  # Check for hysteria executable
+  if ! command -v hysteria &> /dev/null; then
+    echo -e "${RED}❗ Hysteria executable (hysteria) not found.${RESET}"
+    echo -e "${YELLOW}Please run 'Install Hysteria' option from the main menu first.${RESET}"
+    echo ""
+    echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
+    read -p ""
+    return
+  fi
+
+  local config_dir="$(pwd)/hysteria"
+  mapfile -t client_configs < <(find "$config_dir" -maxdepth 1 -type f -name "hysteria-client-*.yaml" -printf "%f\n" | sort)
+
+  if [ ${#client_configs[@]} -eq 0 ]; then
+    print_error "❌ No Hysteria client configuration files found in $config_dir."
+    echo ""
+    echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
+    read -p ""
+    return 0
+  fi
+
+  echo -e "${CYAN}📋 Please select a client configuration file for ping test:${RESET}"
+  client_configs+=("Back to previous menu")
+  select selected_config_file in "${client_configs[@]}"; do
+    if [[ "$selected_config_file" == "Back to previous menu" ]]; then
+      echo -e "${YELLOW}Returning to previous menu...${RESET}"
+      echo ""
+      return 0
+    elif [ -n "$selected_config_file" ]; then
+      break
+    else
+      print_error "Invalid selection. Please enter a valid number."
+    fi
+  done
+  echo ""
+
+  local full_config_path="$config_dir/$selected_config_file"
+
+  if [ ! -f "$full_config_path" ]; then
+    print_error "❌ Configuration file not found: $full_config_path"
+    echo ""
+    echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
+    read -p ""
+    return 1
+  fi
+
+  local target_host
+  while true; do
+    echo -e "👉 ${WHITE}Enter IP address or domain to ping (e.g., google.com, 8.8.8.8):${RESET} "
+    read -p "" target_host
+    if validate_host "$target_host"; then
+      break
+    else
+      print_error "Invalid IP address or domain format. Please try again."
+    fi
+  done
+  echo ""
+
+  echo -e "${CYAN}🚀 Running Hysteria ping test to ${WHITE}$target_host${RESET} using client: ${WHITE}$selected_config_file${RESET}"
+  echo ""
+  /usr/local/bin/hysteria ping -c "$full_config_path" "$target_host"
+  echo ""
+  print_success "Hysteria ping test completed."
+  echo ""
+  echo -e "${YELLOW}Press Enter to return to previous menu...${RESET}"
+  read -p ""
+}
+
 
 # --- Initial Setup Function ---
 # This function performs one-time setup tasks like installing dependencies
@@ -1809,7 +1886,8 @@ while true; do
               echo -e "  ${YELLOW}4)${RESET} ${BLUE}Schedule Hysteria client restart${RESET}"
               echo -e "  ${YELLOW}5)${RESET} ${RED}Delete scheduled restart${RESET}"
               echo -e "  ${YELLOW}6)${RESET} ${WHITE}Speedtest from server${RESET}" # New option
-              echo -e "  ${YELLOW}7)${RESET} ${WHITE}Back to previous menu${RESET}" # Adjusted number
+              echo -e "  ${YELLOW}7)${RESET} ${WHITE}Hysteria ping test (use on server Iran)${RESET}" # NEW OPTION
+              echo -e "  ${YELLOW}8)${RESET} ${WHITE}Back to previous menu${RESET}" # Adjusted number
               echo ""
               draw_line "$CYAN" "-" 40
               echo -e "👉 ${CYAN}Your choice:${RESET} "
@@ -1939,7 +2017,10 @@ while true; do
                 6) # New Speedtest option
                   speedtest_from_server_action
                   ;;
-                7) # Adjusted number for Back to previous menu
+                7) # Hysteria ping test (NEW)
+                  hysteria_ping_test_action
+                  ;;
+                8) # Adjusted number for Back to previous menu
                   echo -e "${YELLOW}Returning to previous menu...${RESET}"
                   break # Break out of this while loop to return to Hysteria Tunnel Management
                   ;;
