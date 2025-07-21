@@ -18,7 +18,7 @@ SCRIPT_DIR="$(dirname "$TRUST_SCRIPT_PATH")"
 SETUP_MARKER_FILE="/var/lib/frpulse/.setup_complete" # Changed TrustTunnel to FRPulse
 
 # --- Script Version ---
-SCRIPT_VERSION="1.2.0" # Define the script version
+SCRIPT_VERSION="1.3.0" # Define the script version - UPDATED TO 1.3.0
 
 # --- Helper Functions ---
 
@@ -109,6 +109,31 @@ validate_host() {
     return 1 # Invalid
   fi
 }
+
+# Function to validate IP:Port format
+validate_ip_port() {
+  local input="$1"
+  local host_part=""
+  local port_part=""
+
+  # Check for IPv6 with brackets
+  if [[ "$input" =~ ^\[(.*)\]:([0-9]+)$ ]]; then
+    host_part="${BASH_REMATCH[1]}"
+    port_part="${BASH_REMATCH[2]}"
+  elif [[ "$input" =~ ^([^:]+):([0-9]+)$ ]]; then
+    host_part="${BASH_REMATCH[1]}"
+    port_part="${BASH_REMATCH[2]}"
+  else
+    return 1 # Does not match IP:Port pattern
+  fi
+
+  if validate_host "$host_part" && validate_port "$port_part"; then
+    return 0 # Valid
+  else
+    return 1 # Invalid host or port
+  fi
+}
+
 
 # Update cron job logic to include Hysteria
 reset_timer() {
@@ -1557,6 +1582,14 @@ certificate_management_menu() {
   done
 }
 
+# --- New function to check Hysteria installation status ---
+check_hysteria_installation_status() {
+  if command -v hysteria &> /dev/null; then
+    echo -e "${GREEN}Installed ✅${RESET}"
+  else
+    echo -e "${RED}Not Installed ❌${RESET}"
+  fi
+}
 
 # --- Main Script Execution ---
 set -e # Exit immediately if a command exits with a non-zero status
@@ -1581,18 +1614,15 @@ while true; do
   echo ""
   # Get server IP addresses
   SERVER_IPV4=$(hostname -I | awk '{print $1}')
-  SERVER_IPV6=$(hostname -I | awk '{print $2}') # This might be empty if no IPv6
+  # SERVER_IPV6=$(hostname -I | awk '{print $2}') # This might be empty if no IPv6
 
 
   draw_line "$CYAN" "=" 40 # Decorative line
   echo -e "${CYAN}     🌐 Server Information${RESET}" # Changed to English
   draw_line "$CYAN" "=" 40 # Decorative line
   echo -e "  ${WHITE}IPv4 Address: ${YELLOW}$SERVER_IPV4${RESET}" # Changed to English
-  if [[ -n "$SERVER_IPV6" ]]; then
-    echo -e "  ${WHITE}IPv6 Address: ${YELLOW}$SERVER_IPV6${RESET}" # Changed to English
-  else
-    echo -e "  ${WHITE}IPv6 Address: ${YELLOW}Not Available${RESET}" # Changed to English
-  fi
+  # Replaced IPv6 with Hysteria Installation Status
+  echo -e "  ${WHITE}Hysteria Status: $(check_hysteria_installation_status)${RESET}"
   echo -e "  ${WHITE}Script Version: ${YELLOW}$SCRIPT_VERSION${RESET}" # Changed to English
   draw_line "$CYAN" "=" 40 # Decorative line
   echo "" # Added for spacing
@@ -1602,9 +1632,9 @@ while true; do
   echo ""
   echo -e "${MAGENTA}1) Install Hysteria${RESET}"
   echo -e "${CYAN}2) Hysteria tunnel management${RESET}"
-  echo -e "${YELLOW}3) Certificate management${RESET}" # Re-numbered from 5
-  echo -e "${RED}4) Uninstall Hysteria and cleanup${RESET}" # Re-numbered from 6, updated text
-  echo -e "${WHITE}5) Exit${RESET}" # Re-numbered from 7
+  echo -e "${YELLOW}3) Certificate management${RESET}" # Re-numbered from 4 to 3
+  echo -e "${RED}4) Uninstall Hysteria and cleanup${RESET}" # Re-numbered from 5 to 4
+  echo -e "${WHITE}5) Exit${RESET}" # Re-numbered from 6 to 5
   echo ""
   read -p "👉 Your choice: " choice
 
