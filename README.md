@@ -2,23 +2,22 @@
 ![Menu](https://github.com/Erfan-XRay/HPulse/blob/main/menu.png)
 
 ## What is HPulse?
-a secure , stable and fast direct tunnel based on [Hysteria 2](https://v2.hysteria.network/)(UDP/TCP).
+a secure , stable and fast direct tunnel based on [Hysteria 2](https://github.com/fatedier/frp)(UDP/TCP).
 ## How to Run?
 Run the following script on your server (Debian or Ubuntu):
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/FRPulse/main/FRPulse.sh)
 ```
 ## How to use ?
 [![Watch on YouTube](https://img.youtube.com/vi/mrXUkbtGxN0/0.jpg)](https://youtu.be/bbC_nseB2Bw?si=nZji-GRvXIOyXfGH)
 ## ⚙️ Features
 - Add, remove, and manage client/server services
 - Support Ipv4/Ipv6
-- Support TCP/UDP/Both
-- Support Strict and SNI tunnel mode
-- Obfs and Masquerade support
-- Automated QUIC parameters
+- Support TCP/UDP/Http/Https
+- SSL/Non SSL mode
 - Add and remove certificates ( Using Certbot )
 - View logs of specific clients
+- Cronjob Management
 - Interactive CLI with colorful UI
 - Easy integration with Xray/V2Ray/Wireguard/etc.
 
