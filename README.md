@@ -1,15 +1,3 @@
-
-![Menu](https://github.com/Erfan-XRay/HPulse/blob/main/menu.png)
-
-## What is FRPulse?
-a secure , stable and fast direct tunnel based on [Hysteria](https://v2.hysteria.network/)(UDP/TCP).
-## How to Run?
-Run the following script on your server (Debian or Ubuntu):
-```
-bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.sh)
-```
-## How to use ?
-[![Watch on YouTube](https://img.youtube.com/vi/mrXUkbtGxN0/0.jpg)](https://youtu.be/bbC_nseB2Bw?si=nZji-GRvXIOyXfGH)
 # راهنمای جامع و حرفه‌ای راه‌اندازی تانل Hysteria با اسکریپت HPulse
 
 این ریپازیتوری یک فورک از پروژه اصلی [Erfan-XRay/HPulse](https://github.com/Erfan-XRay/HPulse) است که با یک راهنمای کامل و قدم به قدم برای نصب، پیکربندی و درک مفاهیم غنی‌سازی شده است.
@@ -38,29 +26,52 @@ bash <(curl -Ls https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.
 
 ```bash
 bash <(curl -fsSL [https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.sh](https://raw.githubusercontent.com/Erfan-XRay/HPulse/main/HPulse.sh))
-## ⚙️ Features
-- Add, remove, and manage client/server services
-- Support Ipv4/Ipv6
-- Support TCP/UDP/Both
-- Support Strict and SNI tunnel mode
-- Obfs and Masquerade support
-- Automated QUIC parameters
-- Add and remove certificates ( Using Certbot )
-- View logs of specific clients
-- Interactive CLI with colorful UI
-- Easy integration with Xray/V2Ray/Wireguard/etc.
+🌍 فصل ۳: پیکربندی سرور خارجی (Edge Server)
+در ترمینال سرور خارجی، گزینه 1. Install Hysteria As A Server را انتخاب کنید.
 
-### My social accounts
+انتخاب حالت نصب:
 
-[![Telegram](https://img.shields.io/badge/Telegram--0088CC?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/Erfan_XRay) 
-[![YouTube](https://img.shields.io/badge/YouTube--FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@Erfan_XRay/videos)
+گزینه 1. Strict را انتخاب کنید. این حالت امن‌تر است.
 
-## Donation Link
+وارد کردن اطلاعات:
 
-<a href="https://nowpayments.io/donation?api_key=HHZTHS8-YC9MEHG-HTC73AH-5WVP950" target="_blank" rel="noreferrer noopener">
-    <img src="https://nowpayments.io/images/embeds/donation-button-white.svg" alt="Cryptocurrency & Bitcoin donation button by NOWPayments">
-</a>
+Domain: دامنه‌ای که آماده کرده‌اید را وارد کنید.
 
-## License
+🧠 در پشت صحنه: اسکریپت از این دامنه برای دریافت خودکار گواهی SSL/TLS استفاده می‌کند. این گواهی برای رمزنگاری و شبیه‌سازی ترافیک به یک اتصال HTTPS استاندارد، ضروری است.
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+Port: پورت 443 را وارد کنید.
+
+Password: یک رمز عبور قوی و پیچیده تعریف کنید.
+
+فعال‌سازی پنهان‌سازی:
+
+به سوالات مربوط به Obfuscation و Masquerade پاسخ مثبت (y) بدهید.
+
+🧠 در پشت صحنه: قابلیت Masquerade مهم‌ترین بخش پنهان‌سازی است. این کار ترافیک شما را پشت یک وب‌سایت معتبر مخفی می‌کند و شناسایی سرور شما را بسیار دشوار می‌سازد.
+
+🇮🇷 فصل ۴: پیکربندی سرور داخلی (Gateway Server)
+در ترمینال سرور داخلی، گزینه 2. Install Hysteria As A Client را انتخاب کنید.
+
+وارد کردن اطلاعات سرور:
+
+اطلاعات سرور خارجی (دامنه، پورت و رمز عبور) را که در مرحله قبل تعریف کردید، وارد نمایید.
+
+به سوالات Obfuscation و Masquerade نیز مطابق با تنظیمات سرور، پاسخ مثبت (y) بدهید.
+
+تنظیم پورت فورواردینگ (Port Forwarding):
+
+در این بخش، پورت‌هایی که پنل‌های شما (مانند Xray) روی آن‌ها فعال هستند را وارد کنید.
+
+می‌توانید چند پورت را با کاما (,) از هم جدا کنید (مثال: 2096,8443).
+
+🧠 در پشت صحنه: اسکریپت با استفاده از iptables قوانینی را تنظیم می‌کند که هر ترافیکی که به این پورت‌ها روی سرور داخلی وارد شود را به سمت تانل Hysteria هدایت می‌کند.
+
+✅ فصل ۵: مدیریت و اعتبارسنجی نهایی
+برای مدیریت سرویس (مشاهده وضعیت، ری‌استارت یا بررسی لاگ‌ها)، می‌توانید از گزینه 4. Hysteria Menu در منوی اصلی اسکریپت استفاده کنید.
+
+تست نهایی عملکرد تانل:
+برای اطمینان از صحت عملکرد، دستور زیر را در ترمینال سرور داخلی (ایران) اجرا کنید:
+
+Bash
+
+curl ifconfig.me
